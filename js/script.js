@@ -1,5 +1,6 @@
 let cantidad;
 let userLocal;
+let logged;
 
 class Cuenta{
     constructor(titular, cuenta, user, pass, numCuenta, nombCuenta){
@@ -25,10 +26,10 @@ function currency(number){
 function btnIngresar(){
     //LISTENER DE BOTON INGRESAR EN LOGIN
     let ingresarBtn = document.getElementById("ingresar");
-    ingresarBtn.addEventListener("click", ()=>{getUser()});
+    ingresarBtn.addEventListener("click", ()=>{checkUserAndPass()});
 }
 
-function getUser(){
+function checkUserAndPass(){
     //OBTENCION DATOS DE FORMULARIO
     let userID = document.getElementById("user").value;
     let userPass = document.getElementById("password").value;
@@ -40,12 +41,20 @@ function getUser(){
     //VALIDACION DE USUARIO Y CONTRASEÑA
     if(userID == userFiltered.user && parseInt(userPass) === userFiltered.pass){
         localStorage.setItem("usuario", userFilteredJSON);
-        window.location.pathname = '../views/inicio.html';
+        setTimeout(() => {
+            window.location.pathname = '../views/inicio.html';  
+        }, 0);
+        
     }else{
         let incorrect = document.getElementById("userPassIncorrect")
         incorrect.innerHTML = ""
         incorrect.append("USUARIO O CONTRASEÑA INCORRECTA")
     }
+    //
+    logged = localStorage.setItem("logged", false);
+    logged = (localStorage.getItem("usuario") === null) ? true : false;
+    console.warn(logged)
+    logged ? localStorage.setItem("logged", false) : localStorage.setItem("logged", true);
 }
 
 function inicio(){
@@ -89,7 +98,19 @@ function closeSesion(){
         e.preventDefault();
         window.location.pathname = '../index.html';
         localStorage.clear();
+        localStorage.getItem("usuario") === null && localStorage.setItem("logged", false);
     });
+}
+
+function Bodyclean(){
+    if (localStorage.getItem("logged") === "false"){
+    let body = document.getElementById("inicio");
+        body.innerHTML = "";
+        body.innerHTML =`<h5 class="text-center">Ud. ha cerrado la Sesión.<br>Vuelva a ingresar</h5>
+        <button class="d-flex mx-auto"><a href="../index.html">Volver</a></button>`;
+        return true;}
+    else{
+    return false;} 
 }
 
 //SELECCION DE FUNCION POR CADA PAG CON ID DE BODY
@@ -99,12 +120,14 @@ switch (pages) {
         btnIngresar();
         break;
     case "inicio" :
-        inicio();
-        closeSesion()
+        Bodyclean();
+        Bodyclean() === false && inicio();
+        Bodyclean() === false && closeSesion();        
         break;
     case "cuenta" :
         cuenta();
-        closeSesion()
+        closeSesion();
+        Bodyclean();
         break;    
     default:
         break;
