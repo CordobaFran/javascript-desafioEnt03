@@ -105,12 +105,26 @@ function closeSesion(){
 function Bodyclean(){
     if (localStorage.getItem("logged") === "false"){
     let body = document.getElementById("inicio");
-        body.innerHTML = "";
+        
         body.innerHTML =`<h5 class="text-center">Ud. ha cerrado la Sesión.<br>Vuelva a ingresar</h5>
         <button class="d-flex mx-auto"><a href="../index.html">Volver</a></button>`;
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+            denyButtonText: `Don't save`,
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+              Swal.fire('Saved!', '', 'success')
+            } else if (result.isDenied) {
+              Swal.fire('Changes are not saved', '', 'info')
+            }
+          })
         return true;}
     else{
-    return false;} 
+    return false;}
 }
 
 //SELECCION DE FUNCION POR CADA PAG CON ID DE BODY
